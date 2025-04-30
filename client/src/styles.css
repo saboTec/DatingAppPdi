@@ -1,0 +1,12 @@
+/* You can add global styles to this file, and also import other style files */
+/* loaded after bootstrap.min.css */
+
+/* override Bootstrap’s base-font variable */
+:root {
+  --bs-font-sans-serif: 'Inter', Helvetica, Arial, sans-serif;
+}
+
+/* ensure body uses the base font */
+body {
+  font-family: 'Inter', Helvetica, Arial, sans-serif;
+}
