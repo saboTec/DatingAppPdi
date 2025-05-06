@@ -18,19 +18,20 @@ public class AccountController(DataContext context, ITokenService tokenService) 
     public async Task<ActionResult<DtoUser>> Register(DtoRegister dtoRegister){
         if (await UserExists(dtoRegister.UserName)){return BadRequest("User is existing");}
         using var hmac = new HMACSHA512();
-        var user = new AppUser{
+        return Ok("Ok");
+        // var user = new AppUser{
 
-            UserName = dtoRegister.UserName,
-            PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(dtoRegister.Password)),
-            PasswordSalt = hmac.Key
-        };
+        //     UserName = dtoRegister.UserName,
+        //     PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(dtoRegister.Password)),
+        //     PasswordSalt = hmac.Key
+        // };
        
-        context.Users.Add(user);
-        await context.SaveChangesAsync();
-        return new DtoUser{
-            UserName = user.UserName,
-            Token = tokenService.CreateToken(user)
-        };
+        // context.Users.Add(user);
+        // await context.SaveChangesAsync();
+        // return new DtoUser{
+        //     UserName = user.UserName,
+        //     Token = tokenService.CreateToken(user)
+        // };
    }
     [HttpPost("login")] //account/login
     public async Task<ActionResult<DtoUser>> Login(DtoLogin dtoLogin){
@@ -43,7 +44,7 @@ public class AccountController(DataContext context, ITokenService tokenService) 
         var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(dtoLogin.Password));
         for (int i = 0; i < computedHash.Length; i++)
         {
-            if (user.PasswordHash[i]!=computedHash[i]) return Unauthorized("NOT Welcome");
+            if (user.PasswordHash[i]!=computedHash[i]) return Unauthorized("Password is not correct");
         }
 
         return new DtoUser{
