@@ -2,14 +2,14 @@ import { Component , inject, OnInit} from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { RouterOutlet } from '@angular/router';
 import { NavComponent } from "./nav/nav.component";
-import { AccountService } from './_service/account.service';
+import { AccountService } from './_services/account.service';
 import { HomeComponent } from './home/home.component';
 import { RegisterComponent } from "./register/register.component";
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [HomeComponent, NavComponent, RouterOutlet],
+  imports: [ NavComponent, RouterOutlet],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
