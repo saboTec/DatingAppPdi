@@ -12,7 +12,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }), 
     provideRouter(routes),
-    provideHttpClient(withInterceptors([errorInterceptor],[jwtInterceptor])),
+    provideHttpClient(withInterceptors([errorInterceptor,jwtInterceptor])),
     provideAnimations(),
     provideToastr({
       positionClass: 'toast-bottom-right'
