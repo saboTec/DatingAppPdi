@@ -22,10 +22,10 @@ export class MemberDetailComponent implements OnInit{
   loadMember(){
     var username = this.route.snapshot.paramMap.get('username');
     if(!username) return;
-    this.memberService.getMember(username).subscribe({
+    this.memberService.getMember("lisa").subscribe({
       next : member => this.member = member,
       error : error => console.log(error),
-      complete : () => console.log('Member loaded')
+      complete : () => console.log('Member loaded',this.member?.age)
     })
   }
 
