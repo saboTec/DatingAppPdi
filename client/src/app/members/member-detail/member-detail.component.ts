@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { MembersService } from '../../_services/members.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Member } from '../../_models/member';
 
 @Component({
@@ -23,7 +23,9 @@ export class MemberDetailComponent implements OnInit{
     var username = this.route.snapshot.paramMap.get('username');
     if(!username) return;
     this.memberService.getMember(username).subscribe({
-      next : member => this.member = member
+      next : member => this.member = member,
+      error : error => console.log(error),
+      complete : () => console.log('Member loaded')
     })
   }
 
