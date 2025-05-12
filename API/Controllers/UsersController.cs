@@ -20,7 +20,7 @@ public class UsersController(IUserRepository userRepository) : BaseApiController
         var users = await userRepository.GetMembersAsync();
         return Ok(users);
     }
-    [AllowAnonymous] // If here then
+    [Authorize] // If here then
     [HttpGet("{username}")] //api/users/
     public async Task<ActionResult<MemberDto>> GetUser(string username){   
         var user = await userRepository.GetMemberAsync(username);
