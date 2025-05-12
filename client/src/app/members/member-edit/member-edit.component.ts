@@ -35,15 +35,30 @@ export class MemberEditComponent implements OnInit {
   //     })
   //   }
 
+    // loadMember(){
+    //   var username = this.route.snapshot.paramMap.get('username');
+    //   if(!username) return;
+    //   this.memberService.getMember(username).subscribe({
+    //     next : member => {
+    //       this.member = member;
+    //     },
+    //     error : error => console.log(error),
+    //     complete : () => console.log('Member loaded sabo',this.member?.age)
+    //   })
+    // }
+
+
     loadMember(){
-      var username = this.route.snapshot.paramMap.get('username');
-      if(!username) return;
-      this.memberService.getMember(username).subscribe({
-        next : member => {
-          this.member = member;
-        },
-        error : error => console.log(error),
-        complete : () => console.log('Member loaded sabo',this.member?.age)
+      const username = this.accountService.currentUser();
+      var user = username?.username;
+      if(!user) return;
+      console.log("User before:",user);
+      
+      this.memberService.getMember(user).subscribe({
+      next: member => this.member = member,
+      complete: () => console.log("Member loaded is:",this.member?.userName),
+      error:error => console.log("No member loaded")
+      
       })
     }
 }
