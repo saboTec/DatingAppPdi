@@ -12,15 +12,17 @@ export class AccountService {
   private http = inject(HttpClient);
   baseUrl = environment.apiUrl;
 
-  currentUser = signal<User | null>(null);
-
+  currentUser = signal <User | null>(null);
+  
   login(model:any){
     return this.http.post<User>(this.baseUrl + 'account/login',model).pipe(
       map(user => {
         if(user){
           localStorage.setItem('user',JSON.stringify(user));
           this.currentUser.set(user);
+          console.log("User set in signal:", this.currentUser());
         }
+        return user;
       })
     )
   }
@@ -30,6 +32,8 @@ export class AccountService {
         if(user){
           localStorage.setItem('user',JSON.stringify(user));
           this.currentUser.set(user);
+          console.log("The User is:",this.currentUser);
+          
         }
         return user;
       })
@@ -40,4 +44,5 @@ export class AccountService {
     this.currentUser.set(null);
 
   }
+  
 }
