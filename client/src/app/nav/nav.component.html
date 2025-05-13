@@ -24,7 +24,7 @@
                 @if (accountService.currentUser()) {
                 <div class="position-relative me-4" dropdown>
                     <a dropdownToggle class="dropdown-toggle text-light text-decoration-none">
-                        Welcome {{ accountService.currentUser()?.username| titlecase }}
+                        Welcome {{ accountService.currentUser()?.userName| titlecase }}
                     </a>
                     <div *dropdownMenu class="dropdown-menu dropdown-menu-end show">
                         <a routerLink="member/edit"  class="dropdown-item">Edit profile</a>
