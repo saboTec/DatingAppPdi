@@ -36,7 +36,9 @@ public class AccountController(DataContext context, ITokenService tokenService) 
     [HttpPost("login")] //account/login
     public async Task<ActionResult<DtoUser>> Login(DtoLogin dtoLogin){
         // if (!await UserExists(dtoLogin.UserName)){return Unauthorized("User is NOT existing");}
-        var user = await context.Users.FirstOrDefaultAsync( x =>
+        var user = await context.Users
+        .Include(p=>p.Photos)
+        .FirstOrDefaultAsync( x =>
             x.UserName == dtoLogin.UserName.ToLower());
 
         if (user == null) return Unauthorized("User is not registered");
@@ -49,7 +51,8 @@ public class AccountController(DataContext context, ITokenService tokenService) 
 
         return new DtoUser{
             UserName = user.UserName,
-            Token = tokenService.CreateToken(user)
+            Token = tokenService.CreateToken(user),
+            PhotoUrl = user.Photos.FirstOrDefault(x => x.IsMain)?.Url
         };
     }
     

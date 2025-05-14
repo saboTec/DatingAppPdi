@@ -23,6 +23,8 @@
             <div class="d-flex align-items-center">
                 @if (accountService.currentUser()) {
                 <div class="position-relative me-4" dropdown>
+
+                    <img class="me-2" src="{{accountService.currentUser()?.photoUrl || './assets.user.png'}}" alt="">
                     <a dropdownToggle class="dropdown-toggle text-light text-decoration-none">
                         Welcome {{ accountService.currentUser()?.userName| titlecase }}
                     </a>

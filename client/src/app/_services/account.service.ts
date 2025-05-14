@@ -12,37 +12,37 @@ export class AccountService {
   private http = inject(HttpClient);
   baseUrl = environment.apiUrl;
 
-  currentUser = signal <User | null>(null);
-  
-  login(model:any){
-    return this.http.post<User>(this.baseUrl + 'account/login',model).pipe(
+  currentUser = signal<User | null>(null);
+
+  login(model: any) {
+    return this.http.post<User>(this.baseUrl + 'account/login', model).pipe(
       map(user => {
-        if(user){
-          localStorage.setItem('user',JSON.stringify(user));
-          this.currentUser.set(user);
-          console.log("User set in signal:", this.currentUser());
+        if (user) {
+          this.setCurrentUser(user);
         }
         return user;
       })
     )
   }
-  register(model:any){
-    return this.http.post<User>(this.baseUrl + 'account/register',model).pipe(
+  register(model: any) {
+    return this.http.post<User>(this.baseUrl + 'account/register', model).pipe(
       map(user => {
-        if(user){
-          localStorage.setItem('user',JSON.stringify(user));
-          this.currentUser.set(user);
-          console.log("The User is:",this.currentUser);
-          
+        if (user) {
+          this.setCurrentUser(user);
         }
         return user;
       })
     )
   }
-  logout(){
+  setCurrentUser(user: User) {
+    localStorage.setItem('user', JSON.stringify(user));
+    this.currentUser.set(user);
+  }
+
+  logout() {
     localStorage.removeItem('user');
     this.currentUser.set(null);
 
   }
-  
+
 }
