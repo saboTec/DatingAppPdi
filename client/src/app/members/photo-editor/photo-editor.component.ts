@@ -24,6 +24,7 @@ export class PhotoEditorComponent implements OnInit{
   
   ngOnInit(): void {
     this.initializeUploader();
+    
   }
   fileOverBase(e:any){
     this.hasBaseDropZoneOver = e;
@@ -48,12 +49,7 @@ export class PhotoEditorComponent implements OnInit{
           this.accountService.setCurrentUser(user)
         }
         const updatedMember = {...this.member()}
-        updatedMember.photoUrl = photo.url;
-        updatedMember.photos.forEach(p => {
-          if(p.isMain) p.isMain = false;
-          if(p.id === photo.id) p.isMain = true;
-        });
-        this.memberChange.emit(updatedMember);
+        
       }
     })
 
@@ -76,6 +72,14 @@ export class PhotoEditorComponent implements OnInit{
       const updatedMember = {...this.member()};
       updatedMember.photos.push(photo);
       this.memberChange.emit(updatedMember);
+      if(photo.isMain){
+        updatedMember.photoUrl = photo.url;
+        updatedMember.photos.forEach(p => {
+          if(p.isMain) p.isMain = false;
+          if(p.id === photo.id) p.isMain = true;
+        });
+        this.memberChange.emit(updatedMember);
+      }
     }
   }
 }

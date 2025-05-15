@@ -9,29 +9,29 @@ using System.ComponentModel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using API.Interfaces;
+using AutoMapper;
 
 namespace API.Controllers;
 
-public class AccountController(DataContext context, ITokenService tokenService) : BaseApiController
+public class AccountController(DataContext context, ITokenService tokenService, IMapper mapper) : BaseApiController
 {
     [HttpPost("register")] //account/register
     public async Task<ActionResult<DtoUser>> Register(DtoRegister dtoRegister){
         if (await UserExists(dtoRegister.UserName)){return BadRequest("User is existing");}
         using var hmac = new HMACSHA512();
-        return Ok("Ok");
-        // var user = new AppUser{
 
-        //     UserName = dtoRegister.UserName,
-        //     PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(dtoRegister.Password)),
-        //     PasswordSalt = hmac.Key
-        // };
+        var user = mapper.Map<AppUser>(dtoRegister);
+        user.UserName = dtoRegister.UserName.ToLower();
+        user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(dtoRegister.Password));
+        user.PasswordSalt = hmac.Key;
        
-        // context.Users.Add(user);
-        // await context.SaveChangesAsync();
-        // return new DtoUser{
-        //     UserName = user.UserName,
-        //     Token = tokenService.CreateToken(user)
-        // };
+        context.Users.Add(user);
+        await context.SaveChangesAsync();
+        return new DtoUser{
+            UserName = user.UserName,
+            Token = tokenService.CreateToken(user),
+            KnownAs = user.KnownAs
+        };
    }
     [HttpPost("login")] //account/login
     public async Task<ActionResult<DtoUser>> Login(DtoLogin dtoLogin){
@@ -51,6 +51,7 @@ public class AccountController(DataContext context, ITokenService tokenService) 
 
         return new DtoUser{
             UserName = user.UserName,
+            KnownAs = user.KnownAs,
             Token = tokenService.CreateToken(user),
             PhotoUrl = user.Photos.FirstOrDefault(x => x.IsMain)?.Url
         };
