@@ -1,13 +1,10 @@
-using System;
 using System.Security.Cryptography;
 using System.Text;
 using API.Data;
 using API.Entities;
 using Microsoft.AspNetCore.Mvc;
 using API.DTO;
-using System.ComponentModel;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using API.Interfaces;
 using AutoMapper;
 
@@ -30,7 +27,8 @@ public class AccountController(DataContext context, ITokenService tokenService, 
         return new DtoUser{
             UserName = user.UserName,
             Token = tokenService.CreateToken(user),
-            KnownAs = user.KnownAs
+            KnownAs = user.KnownAs,
+            Gender = user.Gender
         };
    }
     [HttpPost("login")] //account/login
@@ -53,7 +51,8 @@ public class AccountController(DataContext context, ITokenService tokenService, 
             UserName = user.UserName,
             KnownAs = user.KnownAs,
             Token = tokenService.CreateToken(user),
-            PhotoUrl = user.Photos.FirstOrDefault(x => x.IsMain)?.Url
+            PhotoUrl = user.Photos.FirstOrDefault(x => x.IsMain)?.Url,
+            Gender = user.Gender
         };
     }
     

@@ -26,7 +26,7 @@
 
                     <img class="me-2" src="{{accountService.currentUser()?.photoUrl || './assets.user.png'}}" alt="">
                     <a dropdownToggle class="dropdown-toggle text-light text-decoration-none">
-                        Welcome {{ accountService.currentUser()?.userName| titlecase }}
+                        Welcome {{ accountService.currentUser()?.knownAs }}
                     </a>
                     <div *dropdownMenu class="dropdown-menu dropdown-menu-end show">
                         <a routerLink="member/edit"  class="dropdown-item">Edit profile</a>
