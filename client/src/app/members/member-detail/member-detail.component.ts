@@ -4,10 +4,16 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Member } from '../../_models/member';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { GalleryItem, GalleryModule, ImageItem } from 'ng-gallery';
+import { TimeagoIntl, TimeagoModule } from 'ngx-timeago';
+import { DatePipe, NgIf } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { TimeagoTextComponent } from '../../helpers/timeago-text/timeago-text.component';
+
+
 
 @Component({
   selector: 'app-member-detail',
-  imports: [TabsModule,GalleryModule],
+  imports: [TabsModule,GalleryModule,TimeagoModule,DatePipe,NgIf,TimeagoTextComponent],
   templateUrl: './member-detail.component.html',
   styleUrl: './member-detail.component.css'
 })

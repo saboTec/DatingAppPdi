@@ -1,8 +1,53 @@
-    // "ng-file-upload": {
-    //   "@angular/common": "$@angular/common",
-    //   "@angular/core": "$@angular/core",
-    //   "@angular/animations": "$@angular/animations",
-    //   "@angular/forms": "$@angular/forms"
-    // }
+using System;
+using System.Security.Claims;
 
-    *ngIf="uploader?.queue?.length"
+namespace API.Extentions;
+
+public static class ClaimsPrincipleExtensions
+{
+    public static string GetUsername(this ClaimsPrincipal user)
+    {
+        var username = (user.FindFirstValue(ClaimTypes.Name))
+        ?? throw new Exception("Username not found in the Claims");
+        return username;
+    }
+    public static int GetUserID(this ClaimsPrincipal user)
+    {
+        var userId = int.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)
+        ?? throw new Exception("User not found in the Claims"));
+        return userId;
+    }
+
+}
+
+
+
+
+
+
+
+using System;
+using API.Extentions;
+using API.Interfaces;
+using Microsoft.AspNetCore.Mvc.Filters;
+
+namespace API.Helpers;
+
+public class LogUserActivity : IAsyncActionFilter
+{
+    public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+    {
+        var resultContext = await next();
+
+        if (context.HttpContext.User.Identity?.IsAuthenticated != true) return;
+
+        var username = resultContext.HttpContext.User.GetUsername();
+        var repo = resultContext.HttpContext.RequestServices.GetRequiredService<IUserRepository>();
+        var user = await repo.GetUserByUserNameAsync(username);
+
+        if (user == null) return;
+
+        user.LastActive = DateTime.UtcNow;
+        await repo.SaveAllAsync();
+    }
+}

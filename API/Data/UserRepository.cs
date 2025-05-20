@@ -33,13 +33,19 @@ public class UserRepository(DataContext context,IMapper mapper) : IUserRepositor
         var maxDob = DateOnly.FromDateTime(DateTime.Today.AddYears(-userParams.MinAge));
 
         query = query.Where(x => x.DateOfBirth >= minDob && x.DateOfBirth <= maxDob);
+        query = userParams.OrderBy switch
+        {
+            "created" => query.OrderByDescending(x => x.Created),
+            _ => query.OrderByDescending(x => x.LastActive)
+
+        };
 
         return await PagedList<MemberDto>.CreateAsync(query.ProjectTo<MemberDto>(mapper.ConfigurationProvider),
-        userParams.PageNumber,userParams.PageSize);
+        userParams.PageNumber, userParams.PageSize);
 
     }
 
-    public async Task<AppUser?> GetUserById(int id)
+    public async Task<AppUser?> GetUserByIdAsync(int id)
     {
         return await context.Users.FindAsync(id);
     }
