@@ -40,11 +40,11 @@ public class MessageRepository(DataContext context, IMapper mapper) : IMessageRe
         /// else if it is it from sender then outbox, default is returned when the username of recipient matches and date read null
         query = messageParams.Container switch
         {
-            "Inbox" => query.Where(x => x.Recipient.UserName == messageParams.Username),
-            "Outbox" => query.Where(x => x.Sender.UserName == messageParams.Username),
-            _ => query.Where(x => x.Recipient.UserName == messageParams.Username && x.DateRead == null)
+            "Inbox" => query.Where(x => x.Recipient.UserName == messageParams.Username && x.RecipientDeleted == false),
+            "Outbox" => query.Where(x => x.Sender.UserName == messageParams.Username && x.SenderDeleted == false),
+            _ => query.Where(x => x.Recipient.UserName == messageParams.Username && x.DateRead == null && x.RecipientDeleted == false)
         };
- 
+
         /// we are projecting the query to Message Dto and we want to return the property of this
         /// like the queryable option of the mapper to var messages
         var messages = query.ProjectTo<MessageDto>(mapper.ConfigurationProvider);
@@ -61,8 +61,13 @@ public class MessageRepository(DataContext context, IMapper mapper) : IMessageRe
         var messages = await context.Messages
             .Include(x => x.Sender).ThenInclude(x => x.Photos)
             .Include(x => x.Recipient).ThenInclude(x => x.Photos)
-            .Where(x => x.Recipient.UserName == currentUsername && x.SenderUsername == recipientUsername ||
-                x.Sender.UserName == recipientUsername && x.RecipientUsername == recipientUsername
+            .Where(x =>
+                x.Recipient.UserName == currentUsername
+                    && x.RecipientDeleted == false
+                    && x.SenderUsername == recipientUsername ||
+                x.Sender.UserName == recipientUsername
+                    && x.SenderDeleted == false
+                    && x.RecipientUsername == recipientUsername
             )
             .OrderBy(x => x.MessageSent)
             .ToListAsync();
@@ -79,10 +84,10 @@ public class MessageRepository(DataContext context, IMapper mapper) : IMessageRe
         }
         /// return with the mapper the messages into MessageDto 
         return mapper.Map<IEnumerable<MessageDto>>(messages);
-       
+
     }
 
-    public async Task <bool> SaveAllAsync()
+    public async Task<bool> SaveAllAsync()
     {
         return await context.SaveChangesAsync() > 0;
     }
