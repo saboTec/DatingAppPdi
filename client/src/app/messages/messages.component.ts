@@ -4,10 +4,13 @@ import { MessageService } from '../_services/message.service';
 import { FormsModule, NgForm } from '@angular/forms';
 import { ButtonsModule } from 'ngx-bootstrap/buttons';
 import { TimeagoModule } from 'ngx-timeago';
+import { Message } from '../_models/message';
+import { RouterLink } from '@angular/router';
+import { PaginationModule } from 'ngx-bootstrap/pagination';
 
 @Component({
   selector: 'app-messages',
-  imports: [ButtonsModule,FormsModule,TimeagoModule],
+  imports: [ButtonsModule,FormsModule,TimeagoModule,RouterLink,PaginationModule],
   templateUrl: './messages.component.html',
   styleUrl: './messages.component.css'
 })
@@ -27,6 +30,15 @@ export class MessagesComponent implements OnInit{
   loadMessages(){
     this.messageService.getMessages(this.pageNumber,this.pageSize,this.container);
   }
+
+  ///USE this '' will not work but only this ``
+  ///Correct Way to Fix getRoute() in messages.component.ts:
+  
+  getRoute(message: Message) {
+  if (this.container === 'Outbox') return `/members/${message.recipientUsername}`;
+  else return `/members/${message.senderUsername}`;
+}
+
   ///is called on the event from the template e.g. 
   pageChanged(event:any){
     if(this.pageNumber != event.pageNumber){
