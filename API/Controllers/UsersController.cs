@@ -14,6 +14,7 @@ namespace API.Controllers;
 [Authorize] // If here then for all
 public class UsersController(IUserRepository userRepository,IMapper mapper, IPhotoService photoService) : BaseApiController
 {
+    // [Authorize(Roles = "Admin")] JUST EXAMPLE 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers([FromQuery]UserParams userParams)
     {
@@ -24,6 +25,7 @@ public class UsersController(IUserRepository userRepository,IMapper mapper, IPho
 
         return Ok(users);
     }
+    // [Authorize(Roles = "Member")]  JUST EXAMPLE
     [HttpGet("{username}")] //api/users/
     public async Task<ActionResult<MemberDto>> GetUser(string username)
     {

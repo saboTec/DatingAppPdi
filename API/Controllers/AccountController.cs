@@ -7,61 +7,64 @@ using API.DTO;
 using Microsoft.EntityFrameworkCore;
 using API.Interfaces;
 using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 
 namespace API.Controllers;
 
-public class AccountController(DataContext context, ITokenService tokenService, IMapper mapper) : BaseApiController
+public class AccountController(UserManager<AppUser> userManager, ITokenService tokenService, IMapper mapper) : BaseApiController
 {
     [HttpPost("register")] //account/register
-    public async Task<ActionResult<DtoUser>> Register(DtoRegister dtoRegister){
-        if (await UserExists(dtoRegister.UserName)){return BadRequest("User is existing");}
-        using var hmac = new HMACSHA512();
+    public async Task<ActionResult<DtoUser>> Register(DtoRegister registerDto)
+    {
+        if (await UserExists(registerDto.UserName)) { return BadRequest("User is existing"); }
 
-        var user = mapper.Map<AppUser>(dtoRegister);
-        user.UserName = dtoRegister.UserName.ToLower();
-        // user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(dtoRegister.Password));
-        // user.PasswordSalt = hmac.Key;
-       
-        context.Users.Add(user);
-        await context.SaveChangesAsync();
-        return new DtoUser{
+        var user = mapper.Map<AppUser>(registerDto);
+        user.UserName = registerDto.UserName.ToLower();
+        var result = await userManager.CreateAsync(user, registerDto.Password);
+
+        if (!result.Succeeded) return BadRequest(result.Errors);
+
+
+        return new DtoUser
+        {
             UserName = user.UserName,
-            Token = tokenService.CreateToken(user),
+            Token = await tokenService.CreateToken(user),
             KnownAs = user.KnownAs,
             Gender = user.Gender
         };
-   }
+    }
     [HttpPost("login")] //account/login
-    public async Task<ActionResult<DtoUser>> Login(DtoLogin dtoLogin){
-        // if (!await UserExists(dtoLogin.UserName)){return Unauthorized("User is NOT existing");}
-        var user = await context.Users
-        .Include(p=>p.Photos)
-        .FirstOrDefaultAsync( x =>
-            x.UserName == dtoLogin.UserName.ToLower());
+    public async Task<ActionResult<DtoUser>> Login(DtoLogin loginDto)
+    {
 
-        if (user == null || user.UserName == null ) return Unauthorized("User is not registered");
+        // var user = await userManager.Users
+        // .Include(p=>p.Photos)
+        // .FirstOrDefaultAsync( x =>
+        //     x.UserName == loginDto.UserName.ToUpper());
 
-        // using var hmac = new HMACSHA512(user.PasswordSalt);
-        // var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(dtoLogin.Password));
-        // for (int i = 0; i < computedHash.Length; i++)
-        // {
-        //     if (user.PasswordHash[i]!=computedHash[i]) return Unauthorized("Password is not correct");
-        // }
-        
+        var user = await userManager.Users
+            .Include(p => p.Photos)
+            .SingleOrDefaultAsync(x =>
+                x.NormalizedUserName == loginDto.UserName.ToUpper());
+
+        if (user == null || user.UserName == null) return Unauthorized("User is not registered");
+        var result = await userManager.CheckPasswordAsync(user, loginDto.Password);
+        if (!result) return Unauthorized();
 
         return new DtoUser
         {
             UserName = user.UserName,
             KnownAs = user.KnownAs,
-            Token = tokenService.CreateToken(user),
+            Token = await tokenService.CreateToken(user),
             PhotoUrl = user.Photos.FirstOrDefault(x => x.IsMain)?.Url,
             Gender = user.Gender
         };
     }
-    
 
-   private async Task<bool> UserExists(string username ){
 
-        return await context.Users.AnyAsync(x => x.NormalizedUserName == username.ToUpper()); //Bob != bob
-   }
+    private async Task<bool> UserExists(string username)
+    {
+
+        return await userManager.Users.AnyAsync(x => x.NormalizedUserName == username.ToUpper()); //Bob != bob
+    }
 }
