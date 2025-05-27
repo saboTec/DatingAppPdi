@@ -25,7 +25,7 @@ public class MessagesController(IMessageRepository messageRepository, IUserRepos
         /// we take the repository to search for the sender (App USER) and the recipient (App User)
         var sender = await userRepository.GetUserByUserNameAsync(username);
         var recipient = await userRepository.GetUserByUserNameAsync(createMessageDto.RecipientUsername);
-        if (sender == null || recipient == null) return BadRequest("Can not send");
+        if (sender == null || recipient == null || sender.UserName == null || recipient.UserName==null ) return BadRequest("Can not send");
 
         /// the Message is beeing created and all the required variables need to be populated
         /// and our content is been handded over from the parameter createMessageDto.

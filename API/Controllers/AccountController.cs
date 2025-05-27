@@ -19,8 +19,8 @@ public class AccountController(DataContext context, ITokenService tokenService, 
 
         var user = mapper.Map<AppUser>(dtoRegister);
         user.UserName = dtoRegister.UserName.ToLower();
-        user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(dtoRegister.Password));
-        user.PasswordSalt = hmac.Key;
+        // user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(dtoRegister.Password));
+        // user.PasswordSalt = hmac.Key;
        
         context.Users.Add(user);
         await context.SaveChangesAsync();
@@ -39,15 +39,18 @@ public class AccountController(DataContext context, ITokenService tokenService, 
         .FirstOrDefaultAsync( x =>
             x.UserName == dtoLogin.UserName.ToLower());
 
-        if (user == null) return Unauthorized("User is not registered");
-        using var hmac = new HMACSHA512(user.PasswordSalt);
-        var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(dtoLogin.Password));
-        for (int i = 0; i < computedHash.Length; i++)
-        {
-            if (user.PasswordHash[i]!=computedHash[i]) return Unauthorized("Password is not correct");
-        }
+        if (user == null || user.UserName == null ) return Unauthorized("User is not registered");
 
-        return new DtoUser{
+        // using var hmac = new HMACSHA512(user.PasswordSalt);
+        // var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(dtoLogin.Password));
+        // for (int i = 0; i < computedHash.Length; i++)
+        // {
+        //     if (user.PasswordHash[i]!=computedHash[i]) return Unauthorized("Password is not correct");
+        // }
+        
+
+        return new DtoUser
+        {
             UserName = user.UserName,
             KnownAs = user.KnownAs,
             Token = tokenService.CreateToken(user),
@@ -59,6 +62,6 @@ public class AccountController(DataContext context, ITokenService tokenService, 
 
    private async Task<bool> UserExists(string username ){
 
-        return await context.Users.AnyAsync(x => x.UserName.ToLower() == username.ToLower()); //Bob != bob
+        return await context.Users.AnyAsync(x => x.NormalizedUserName == username.ToUpper()); //Bob != bob
    }
 }
