@@ -43,7 +43,7 @@ export class MemberEditComponent implements OnInit {
     }
 
     // The User object has 'username', not 'userName'
-    this.username = user.userName;
+    this.username = user.username;
     console.log("Loaded Username:", this.username);
 
     if (!this.username) {
