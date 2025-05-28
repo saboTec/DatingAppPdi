@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { BsModalRef } from 'ngx-bootstrap/modal';
+import { AdminService } from '../../_services/admin.service';
 
 @Component({
   selector: 'app-roles-modal',
@@ -13,6 +14,7 @@ export class RolesModalComponent {
   username = '';
   availableRoles:string[] = [];
   selectedRoles:string[] = [];
+  rolesUpdated = false;
 
   updateChecked(checkedValue:string){
     if(this.selectedRoles.includes(checkedValue)){
@@ -22,6 +24,10 @@ export class RolesModalComponent {
     }
   }
 
+  onSelectRoles(){
+    this.rolesUpdated = true;
+    this.bsModalRef.hide();
+  }
 
 
 }
