@@ -32,6 +32,14 @@ public class MessageRepository(DataContext context, IMapper mapper) : IMessageRe
         return await context.Connections.FindAsync(connectionId);
     }
 
+    public async Task<Group?> GetGroupForConnection(string connectionId)
+    {
+        return await context.Groups
+            .Include(x => x.Connections)
+            .Where(x => x.Connections.Any(c => c.ConnectionId == connectionId))
+            .FirstOrDefaultAsync();
+    }
+
     public async Task<Message?> GetMessage(int id)
     {
         return await context.Messages.FindAsync(id);
@@ -76,8 +84,6 @@ public class MessageRepository(DataContext context, IMapper mapper) : IMessageRe
         ///get our messages and include other classes like AppUser and Photos since we are having these variables in 
         /// the Messages.
         var messages = await context.Messages
-            .Include(x => x.Sender).ThenInclude(x => x.Photos)
-            .Include(x => x.Recipient).ThenInclude(x => x.Photos)
             .Where(x =>
                 x.Recipient.UserName == currentUsername
                     && x.RecipientDeleted == false
@@ -87,6 +93,7 @@ public class MessageRepository(DataContext context, IMapper mapper) : IMessageRe
                     && x.RecipientUsername == recipientUsername
             )
             .OrderBy(x => x.MessageSent)
+            .ProjectTo<MessageDto>(mapper.ConfigurationProvider)
             .ToListAsync();
 
         ///Checkin for the unread messages. to get all the empty times
@@ -100,7 +107,7 @@ public class MessageRepository(DataContext context, IMapper mapper) : IMessageRe
             await context.SaveChangesAsync();
         }
         /// return with the mapper the messages into MessageDto 
-        return mapper.Map<IEnumerable<MessageDto>>(messages);
+        return messages;
 
     }
 
