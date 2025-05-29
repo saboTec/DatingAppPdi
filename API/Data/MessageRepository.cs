@@ -104,7 +104,6 @@ public class MessageRepository(DataContext context, IMapper mapper) : IMessageRe
         if (unredMessages.Count != 0)
         {
             unredMessages.ForEach(x => x.DateRead = DateTime.UtcNow);
-            await context.SaveChangesAsync();
         }
         /// return with the mapper the messages into MessageDto 
         return messages;
@@ -116,8 +115,5 @@ public class MessageRepository(DataContext context, IMapper mapper) : IMessageRe
         context.Connections.Remove(connection);
     }
 
-    public async Task<bool> SaveAllAsync()
-    {
-        return await context.SaveChangesAsync() > 0;
-    }
+
 }

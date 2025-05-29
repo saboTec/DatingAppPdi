@@ -41,7 +41,7 @@ export class MemberEditComponent implements OnInit {
       console.error("No logged-in user found.");
       return;
     }
-
+    
     // The User object has 'username', not 'userName'
     this.username = user.username;
     console.log("Loaded Username:", this.username);
