@@ -29,11 +29,11 @@
     bottom: 0;
     opacity: 1;
 }
-animate {
+.animate {
     transition: all 0.3s ;
 }
 @keyframes fa-blink {
-    0% {opacity: 1;};
+    0% {opacity: 1;}
     100% {opacity: 0.4;}
 }
 .is-online {

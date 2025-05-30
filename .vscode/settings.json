@@ -1,5 +1,7 @@
 {
     "files.watcherExclude": {
         "**/target": true
-    }
+    },
+    "appService.defaultWebAppToDeploy": "/subscriptions/3b6f46e0-a234-43c3-bceb-68588c7aac0f/resourceGroups/DA-Course-Resources/providers/Microsoft.Web/sites/dating-app-course",
+    "appService.deploySubpath": "API/bin/Publish"
 }
