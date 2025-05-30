@@ -83,7 +83,7 @@ public class MessageRepository(DataContext context, IMapper mapper) : IMessageRe
     {
         ///get our messages and include other classes like AppUser and Photos since we are having these variables in 
         /// the Messages.
-        var messages = await context.Messages
+        var query = context.Messages
             .Where(x =>
                 x.Recipient.UserName == currentUsername
                     && x.RecipientDeleted == false
@@ -93,11 +93,12 @@ public class MessageRepository(DataContext context, IMapper mapper) : IMessageRe
                     && x.RecipientUsername == recipientUsername
             )
             .OrderBy(x => x.MessageSent)
-            .ProjectTo<MessageDto>(mapper.ConfigurationProvider)
-            .ToListAsync();
+            .AsQueryable();
+            // .ProjectTo<MessageDto>(mapper.ConfigurationProvider)
+            // .ToListAsync();
 
         ///Checkin for the unread messages. to get all the empty times
-        var unredMessages = messages.Where(x => x.DateRead == null &&
+        var unredMessages = query.Where(x => x.DateRead == null &&
             x.RecipientUsername == currentUsername).ToList();
 
         /// for those found we are setting the datetime now since we open the thread
@@ -106,7 +107,7 @@ public class MessageRepository(DataContext context, IMapper mapper) : IMessageRe
             unredMessages.ForEach(x => x.DateRead = DateTime.UtcNow);
         }
         /// return with the mapper the messages into MessageDto 
-        return messages;
+        return await query.ProjectTo<MessageDto>(mapper.ConfigurationProvider).ToListAsync();
 
     }
 
