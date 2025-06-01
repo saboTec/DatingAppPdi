@@ -1,4 +1,4 @@
-<div class="mb-3 form-floating">
+<!-- <div class="mb-3 form-floating">
     <input [class.is-invalid]="control.touched && control.invalid" [type]="type()" class="form-control"
         [formControl]="control" placeholder="{{label()}}">
 
@@ -12,4 +12,35 @@
         {{label()}} must be at max {{control.errors?.['maxlength'].requiredLength}} characters</div>
     <div *ngIf="control.hasError('isMatching')" class="invalid-feedback text-start">
         {{label()}} does not match!</div>
+</div> -->
+
+
+<div class="mb-3 form-floating position-relative">
+  <input [class.is-invalid]="control.touched && control.invalid"
+         [type]="inputType"
+         class="form-control"
+         [formControl]="control"
+         placeholder="{{label()}}">
+
+  <label>{{label()}}</label>
+
+  <button *ngIf="type() === 'password'" 
+          type="button"
+          class="btn btn-outline-secondary btn-sm position-absolute toggle-btn"
+          (click)="showPassword = !showPassword">
+    {{ showPassword ? '🙈' : '👁️' }}
+  </button>
+
+  <div *ngIf="control.hasError('required')" class="invalid-feedback text-start">
+    Please enter a {{label()}}
+  </div>
+  <div *ngIf="control.hasError('minlength')" class="invalid-feedback text-start">
+    {{label()}} must be at least {{control.errors?.['minlength'].requiredLength}} characters
+  </div>
+  <div *ngIf="control.hasError('maxlength')" class="invalid-feedback text-start">
+    {{label()}} must be at max {{control.errors?.['maxlength'].requiredLength}} characters
+  </div>
+  <div *ngIf="control.hasError('isMatching')" class="invalid-feedback text-start">
+    {{label()}} does not match!
+  </div>
 </div>

@@ -1,7 +1,6 @@
 import { Component, inject, OnInit, output } from '@angular/core';
 import {  AbstractControl, FormBuilder, FormControl, FormGroup, NgForm, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
 import { AccountService } from '../_services/account.service';
-import { JsonPipe } from '@angular/common';
 import { TextInputComponent } from "../_forms/text-input/text-input.component";
 import { DatePickerComponent } from '../_forms/date-picker/date-picker.component';
 import { Router } from '@angular/router';
@@ -10,7 +9,6 @@ import { Router } from '@angular/router';
   selector: 'app-register',
   imports: [
     ReactiveFormsModule,
-    JsonPipe,
     TextInputComponent,
     DatePickerComponent
 ],
@@ -42,7 +40,7 @@ export class RegisterComponent implements OnInit{
       confirmPassword: ['',[Validators.required,this.matchValues('password')]],
     })
     this.registerForm.controls['password'].valueChanges.subscribe({
-      next: () => this.registerForm.controls['confirmPassword'].updateValueAndValidity
+      next: () => this.registerForm.controls['confirmPassword'].updateValueAndValidity()
     })
   }
 
