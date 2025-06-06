@@ -1,5 +1,8 @@
 {
   "dependencies": {
     "ngx-timeago": "^3.0.0"
+  },
+  "scripts": {
+    "build:prod": "ng build --base-href=/$SUBPATH/"
   }
 }

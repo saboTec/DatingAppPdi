@@ -1,3 +1,4 @@
+using API.Configurations;
 using API.Data;
 using API.Entities;
 using API.Extentions;
@@ -11,9 +12,26 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddIdentityServices(builder.Configuration);
+
+// Get from environment or fallback to empty
+var subpath = Environment.GetEnvironmentVariable("SUBPATH") ?? "sepioo";
+
+// Configure strongly-typed class from this value
+builder.Services.Configure<BasePathConfiguration>(options =>
+{
+    options.BasePath = subpath ;
+});
+
+
+
 var app = builder.Build();
+
+// Apply base path if defined
+app.UsePathBase("/" + subpath);
+// app.UsePathBase($"/sepioo");
+
 app.UseMiddleware<ExceptionMiddleware>();
-app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("http://localhost:4200","https://localhost:4200"));
+app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("http://localhost:4200", "https://localhost:4200"));
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -36,12 +54,12 @@ try
     await context.Database.MigrateAsync();
     await context.Database.ExecuteSqlRawAsync("DELETE FROM [Connections]");
     // await context.Database.ExecuteSqlRawAsync("DELETE FROM \"Connections\""); similat to the above one
-    await Seed.SeedUsers(userManager, roleManager); 
+    await Seed.SeedUsers(userManager, roleManager);
 }
 catch (Exception ex)
 {
-   var logger = services.GetRequiredService<ILogger<Program>>();
-   logger.LogError(ex,"An error is occured during migration");
+    var logger = services.GetRequiredService<ILogger<Program>>();
+    logger.LogError(ex, "An error is occured during migration");
 }
 
 app.Run();

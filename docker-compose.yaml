@@ -1,10 +1,49 @@
+# services:
+#   sql:
+#     image: mcr.microsoft.com/mssql/server:2022-latest
+#     container_name: sql
+#     environment:
+#       ACCEPT_EULA : "1"
+#       MSSQL_SA_PASSWORD: "Password@1"
+#     platform: "linux/amd64"
+#     ports:
+#       - "1433:1433"
+#     api:
+#   environment:
+#       - SUBPATH=datingapp
+
+version: '3.8'
+
 services:
   sql:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: sql
-    environment:
-      ACCEPT_EULA : "1"
-      MSSQL_SA_PASSWORD: "Password@1"
     platform: "linux/amd64"
+    environment:
+      ACCEPT_EULA: "1"
+      MSSQL_SA_PASSWORD: "Password@1"
     ports:
       - "1433:1433"
+
+  api:
+    build:
+      context: .
+      dockerfile: API/Dockerfile
+    container_name: api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - SUBPATH=sepioo
+      - ConnectionStrings__DefaultConnection=Server=sql,1433;Database=DatingDB;User Id=SA;Password=Password@1;TrustServerCertificate=True
+    expose:
+      - "80"
+    depends_on:
+      - sql
+
+  nginx:
+    build:
+      context: ./nginx
+    container_name: nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - api

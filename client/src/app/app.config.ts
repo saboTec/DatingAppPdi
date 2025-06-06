@@ -11,11 +11,13 @@ import { jwtInterceptor } from './_interceptors/jwt.interceptor';
 import { loadingInterceptor } from './_interceptors/loading.interceptor';
 import { TimeagoPipe } from 'ngx-timeago';
 import { ModalModule } from 'ngx-bootstrap/modal';
+import { APP_BASE_HREF } from '@angular/common';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideZoneChangeDetection({ eventCoalescing: true }), 
+    provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
+    { provide: APP_BASE_HREF, useValue: '/sepioo' },
     provideHttpClient(withInterceptors([errorInterceptor,jwtInterceptor,loadingInterceptor])),
     provideAnimations(),
     provideToastr({
