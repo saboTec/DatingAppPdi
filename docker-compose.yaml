@@ -32,18 +32,18 @@ services:
     container_name: api
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - SUBPATH=sepioo
+      - SUBPATH=datingapp
       - ConnectionStrings__DefaultConnection=Server=sql,1433;Database=DatingDB;User Id=SA;Password=Password@1;TrustServerCertificate=True
     expose:
       - "80"
     depends_on:
       - sql
 
-  nginx:
+  nginx-datingapp:
     build:
-      context: ./nginx
-    container_name: nginx
+      context: ./nginx-datingapp
+    container_name: nginx-datingapp
     ports:
-      - "80:80"
+      - "8080:80"
     depends_on:
       - api

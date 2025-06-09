@@ -5,5 +5,5 @@ namespace API.Configurations;
 
 public class BasePathConfiguration
 {
-    public string BasePath { get; set; } = "sepioo";
+    public string BasePath { get; set; } = "datingapp";
 }

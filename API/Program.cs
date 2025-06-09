@@ -14,7 +14,7 @@ builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddIdentityServices(builder.Configuration);
 
 // Get from environment or fallback to empty
-var subpath = Environment.GetEnvironmentVariable("SUBPATH") ?? "sepioo";
+var subpath = Environment.GetEnvironmentVariable("SUBPATH") ?? "datingapp";
 
 // Configure strongly-typed class from this value
 builder.Services.Configure<BasePathConfiguration>(options =>

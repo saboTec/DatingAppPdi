@@ -17,7 +17,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    { provide: APP_BASE_HREF, useValue: '/sepioo' },
+    { provide: APP_BASE_HREF, useValue: '/datingapp' },
     provideHttpClient(withInterceptors([errorInterceptor,jwtInterceptor,loadingInterceptor])),
     provideAnimations(),
     provideToastr({
