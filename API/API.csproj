@@ -4,6 +4,7 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <SpaRoot>..\client\</SpaRoot>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,5 +20,12 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.5" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.9.0" />
   </ItemGroup>
+
+  <Target Name="BuildAngular"
+    BeforeTargets="ComputeFilesToPublish;ResolveStaticWebAssets">
+    <Message Importance="high" Text="Building Angular app in '$(SpaRoot)'..." />
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm ci" />
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build -- --configuration production" />
+  </Target>
 
 </Project>
